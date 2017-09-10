@@ -4,12 +4,13 @@
 #
 Name     : python-Levenshtein
 Version  : 0.12.0
-Release  : 3
-URL      : https://pypi.python.org/packages/42/a9/d1785c85ebf9b7dfacd08938dd028209c34a0ea3b1bcdb895208bd40a67d/python-Levenshtein-0.12.0.tar.gz
-Source0  : https://pypi.python.org/packages/42/a9/d1785c85ebf9b7dfacd08938dd028209c34a0ea3b1bcdb895208bd40a67d/python-Levenshtein-0.12.0.tar.gz
+Release  : 4
+URL      : http://pypi.debian.net/python-Levenshtein/python-Levenshtein-0.12.0.tar.gz
+Source0  : http://pypi.debian.net/python-Levenshtein/python-Levenshtein-0.12.0.tar.gz
 Summary  : Python extension for computing string edit distances and similarities.
 Group    : Development/Tools
 License  : GPL-2.0
+Requires: python-Levenshtein-legacypython
 Requires: python-Levenshtein-python
 Requires: setuptools
 BuildRequires : pbr
@@ -19,15 +20,44 @@ BuildRequires : python3-dev
 BuildRequires : setuptools
 
 %description
-.. contents ::
 Introduction
-------------
-The Levenshtein Python C extension module contains functions for fast
-computation of
+        ------------
+        
+        The Levenshtein Python C extension module contains functions for fast
+        computation of
+        
+        * Levenshtein (edit) distance, and edit operations
+        
+        * string similarity
+        
+        * approximate median strings, and generally string averaging
+        
+        * string sequence and set similarity
+        
+        It supports both normal and Unicode strings.
+        
+        Python 2.2 or newer is required; Python 3 is supported.
+        
+        StringMatcher.py is an example SequenceMatcher-like class built on the top of
+        Levenshtein.  It misses some SequenceMatcher's functionality, and has some
+        extra OTOH.
+        
+        Levenshtein.c can be used as a pure C library, too.  You only have to define
+        NO_PYTHON preprocessor symbol (-DNO_PYTHON) when compiling it.  The
+        functionality is similar to that of the Python extension.  No separate docs
+
+%package legacypython
+Summary: legacypython components for the python-Levenshtein package.
+Group: Default
+
+%description legacypython
+legacypython components for the python-Levenshtein package.
+
 
 %package python
 Summary: python components for the python-Levenshtein package.
 Group: Default
+Requires: python-Levenshtein-legacypython
 Provides: python-levenshtein-python
 
 %description python
@@ -38,13 +68,16 @@ python components for the python-Levenshtein package.
 %setup -q -n python-Levenshtein-0.12.0
 
 %build
+export http_proxy=http://127.0.0.1:9/
+export https_proxy=http://127.0.0.1:9/
+export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1490546197
+export SOURCE_DATE_EPOCH=1505058364
 python2 setup.py build -b py2
 python3 setup.py build -b py3
 
 %install
-export SOURCE_DATE_EPOCH=1490546197
+export SOURCE_DATE_EPOCH=1505058364
 rm -rf %{buildroot}
 python2 -tt setup.py build -b py2 install --root=%{buildroot} --force
 python3 -tt setup.py build -b py3 install --root=%{buildroot} --force
@@ -55,7 +88,10 @@ echo ----[ mark ]----
 %files
 %defattr(-,root,root,-)
 
-%files python
+%files legacypython
 %defattr(-,root,root,-)
 /usr/lib/python2*/*
+
+%files python
+%defattr(-,root,root,-)
 /usr/lib/python3*/*
