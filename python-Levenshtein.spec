@@ -4,7 +4,7 @@
 #
 Name     : python-Levenshtein
 Version  : 0.12.0
-Release  : 11
+Release  : 12
 URL      : http://pypi.debian.net/python-Levenshtein/python-Levenshtein-0.12.0.tar.gz
 Source0  : http://pypi.debian.net/python-Levenshtein/python-Levenshtein-0.12.0.tar.gz
 Summary  : Python extension for computing string edit distances and similarities.
