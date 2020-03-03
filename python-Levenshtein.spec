@@ -4,52 +4,157 @@
 #
 Name     : python-Levenshtein
 Version  : 0.12.0
-Release  : 23
+Release  : 24
 URL      : http://pypi.debian.net/python-Levenshtein/python-Levenshtein-0.12.0.tar.gz
 Source0  : http://pypi.debian.net/python-Levenshtein/python-Levenshtein-0.12.0.tar.gz
-Summary  : Python extension for computing string edit distances and similarities.
+Summary  : Python extension for computing string edit distances and similarities
 Group    : Development/Tools
 License  : GPL-2.0
-Requires: python-Levenshtein-python3
-Requires: python-Levenshtein-python
+Requires: python-Levenshtein-license = %{version}-%{release}
+Requires: python-Levenshtein-python = %{version}-%{release}
+Requires: python-Levenshtein-python3 = %{version}-%{release}
 Requires: setuptools
-BuildRequires : pbr
-BuildRequires : pip
-
+BuildRequires : buildreq-distutils3
 BuildRequires : python3-dev
 BuildRequires : setuptools
 
 %description
+.. contents ::
+
 Introduction
-        ------------
-        
-        The Levenshtein Python C extension module contains functions for fast
-        computation of
-        
-        * Levenshtein (edit) distance, and edit operations
-        
-        * string similarity
-        
-        * approximate median strings, and generally string averaging
-        
-        * string sequence and set similarity
-        
-        It supports both normal and Unicode strings.
-        
-        Python 2.2 or newer is required; Python 3 is supported.
-        
-        StringMatcher.py is an example SequenceMatcher-like class built on the top of
-        Levenshtein.  It misses some SequenceMatcher's functionality, and has some
-        extra OTOH.
-        
-        Levenshtein.c can be used as a pure C library, too.  You only have to define
-        NO_PYTHON preprocessor symbol (-DNO_PYTHON) when compiling it.  The
-        functionality is similar to that of the Python extension.  No separate docs
+------------
+
+The Levenshtein Python C extension module contains functions for fast
+computation of
+
+* Levenshtein (edit) distance, and edit operations
+
+* string similarity
+
+* approximate median strings, and generally string averaging
+
+* string sequence and set similarity
+
+It supports both normal and Unicode strings.
+
+Python 2.2 or newer is required; Python 3 is supported.
+
+StringMatcher.py is an example SequenceMatcher-like class built on the top of
+Levenshtein.  It misses some SequenceMatcher's functionality, and has some
+extra OTOH.
+
+Levenshtein.c can be used as a pure C library, too.  You only have to define
+NO_PYTHON preprocessor symbol (-DNO_PYTHON) when compiling it.  The
+functionality is similar to that of the Python extension.  No separate docs
+are provided yet, RTFS.  But they are not interchangeable:
+
+* C functions exported when compiling with -DNO_PYTHON (see Levenshtein.h)
+  are not exported when compiling as a Python extension (and vice versa)
+
+* Unicode character type used with -DNO_PYTHON is wchar_t, Python extension
+  uses Py_UNICODE, they may be the same but don't count on it
+
+Documentation
+--------------
+
+gendoc.sh generates HTML API documentation,
+you probably want a selfcontained instead of includable version, so run
+in ``./gendoc.sh --selfcontained``.  It needs Levenshtein already installed
+and genextdoc.py.
+
+License
+-----------
+
+Levenshtein can be copied and/or modified under the terms of GNU General
+Public License, see the file COPYING for full license text.
+
+History
+-------
+
+This package was long missing from PyPi and available as source checkout only.
+We needed to restore this package for `Go Mobile for Plone <http://webandmobile.mfabrik.com>`_
+and `Pywurfl <http://celljam.net/>`_ projects which depend on this.
+
+Source code
+-----------
+
+* http://github.com/ztane/python-Levenshtein/
+
+Documentation
+-------------
+
+* `Documentation for the current version <https://rawgit.com/ztane/python-Levenshtein/master/docs/Levenshtein.html>`_
+
+Authors
+-------
+
+* Maintainer: `Antti Haapala <antti@haapala.name>`
+
+* Python 3 compatibility: Esa Määttä
+
+* Jonatas CD: Fixed documentation generation
+
+* Previous maintainer: `Mikko Ohtamaa <http://opensourcehacker.com>`_
+
+* Original code: David Necas (Yeti) <yeti at physics.muni.cz>
+
+============
+ Changelog
+============
+
+0.12.0
+------
+
+* Fixed a bug in StringMatcher.StringMatcher.get_matching_blocks /
+  extract_editops for Python 3; now allow only `str` editops on
+  both Python 2 and Python 3, for simpler and working code.
+
+* Added documentation in the source distribution and in GIT
+
+* Fixed the package layout: renamed the .so/.dll to _levenshtein,
+  and made it reside inside a package, along with the StringMatcher
+  class.
+
+* Fixed spelling errors.
+
+0.11.2
+------
+
+* Fixed a bug in setup.py: installation would fail on Python 3 if the locale
+  did not specify UTF-8 charset (Felix Yan).
+
+* Added COPYING, StringMatcher.py, gendoc.sh and NEWS in MANIFEST.in, as they
+  were missing from source distributions.
+
+0.11.1
+------
+
+* Added Levenshtein.h to MANIFEST.in
+
+0.11.0
+------
+
+* Python 3 support, maintainership passed to Antti Haapala
+
+0.10.1 - 0.10.2
+---------------
+
+* Made python-Lehvenstein Git compatible and use setuptools for PyPi upload
+
+* Created HISTORY.txt and made README reST compatible
+
+%package license
+Summary: license components for the python-Levenshtein package.
+Group: Default
+
+%description license
+license components for the python-Levenshtein package.
+
 
 %package python
 Summary: python components for the python-Levenshtein package.
 Group: Default
-Requires: python-Levenshtein-python3
+Requires: python-Levenshtein-python3 = %{version}-%{release}
 Provides: python-levenshtein-python
 
 %description python
@@ -60,6 +165,7 @@ python components for the python-Levenshtein package.
 Summary: python3 components for the python-Levenshtein package.
 Group: Default
 Requires: python3-core
+Provides: pypi(python-Levenshtein)
 
 %description python3
 python3 components for the python-Levenshtein package.
@@ -67,24 +173,39 @@ python3 components for the python-Levenshtein package.
 
 %prep
 %setup -q -n python-Levenshtein-0.12.0
+cd %{_builddir}/python-Levenshtein-0.12.0
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1526149302
-python3 setup.py build -b py3
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1583212892
+# -Werror is for werrorists
+export GCC_IGNORE_WERROR=1
+export CFLAGS="$CFLAGS -fno-lto "
+export FCFLAGS="$CFLAGS -fno-lto "
+export FFLAGS="$CFLAGS -fno-lto "
+export CXXFLAGS="$CXXFLAGS -fno-lto "
+export MAKEFLAGS=%{?_smp_mflags}
+python3 setup.py build
 
 %install
+export MAKEFLAGS=%{?_smp_mflags}
 rm -rf %{buildroot}
-python3 -tt setup.py build -b py3 install --root=%{buildroot}
+mkdir -p %{buildroot}/usr/share/package-licenses/python-Levenshtein
+cp %{_builddir}/python-Levenshtein-0.12.0/COPYING %{buildroot}/usr/share/package-licenses/python-Levenshtein/07102fa3ba93fed83e4cab3681f311908c1a7c93
+python3 -tt setup.py build  install --root=%{buildroot}
 echo ----[ mark ]----
 cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
 echo ----[ mark ]----
 
 %files
 %defattr(-,root,root,-)
+
+%files license
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/python-Levenshtein/07102fa3ba93fed83e4cab3681f311908c1a7c93
 
 %files python
 %defattr(-,root,root,-)
